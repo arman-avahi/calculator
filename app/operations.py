@@ -28,7 +28,7 @@ OPERATIONS = {
     "+": add,
     "-": subtract,
     "*": multiply,
-    "/": divide
+    "/": divide,
 }
 
 

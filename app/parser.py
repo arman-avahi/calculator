@@ -7,12 +7,13 @@ from app import operations
 CONSTANTS = {
     "pi": math.pi,
     "e": math.e,
-    "tau": math.tau
+    "tau": math.tau,
 }
 
 
 class Parser:
     """Handles converting a string of numbers and operations into a float."""
+
     def __init__(self):
         self.last_result: float = 0
 
@@ -27,7 +28,7 @@ class Parser:
 
         Raises:
             ValueError: If expression is invalid.
-            ZeroDivisionError: Division by zero.
+            ZeroDivisionError: If division by zero occurs.
         """
         tokens = _to_tokens(expression)
         tokens = _resolve_constants(tokens, self.last_result)
@@ -41,7 +42,7 @@ class Parser:
         return self.last_result
 
 
-def _to_tokens(expression: str) -> list:
+def _to_tokens(expression: str) -> list[str]:
     """Removes all spaces from the expression and splits into tokens.
 
     Returns a list of numbers and operators as strings.
@@ -64,7 +65,7 @@ def _to_tokens(expression: str) -> list:
         if token:
             filt_tokens.append(token)
 
-    # handle negative numbers by merging '-' with number on the right
+    # handle negative numbers by merging '-' with number on its right
     i = 0
     while i < len(filt_tokens) - 1:
         # If current token is an operator and next is "-"
@@ -82,29 +83,30 @@ def _to_tokens(expression: str) -> list:
     return filt_tokens
 
 
-def _resolve_constants(tokens: list, last_result: float) -> list:
+def _resolve_constants(tokens: list[str], last_result: float) -> list[str]:
     """Finds constants in their string form and swaps them with floats.
 
     Example: ["2", "*", "pi"] -> ["2", "*", "3.141592653589793"]
 
     Args:
         tokens: List of tokens to resolve constants for.
+        last_result: The value used to replace all 'r' constants.
 
     Returns:
         A mutated version of tokens with no alphabet constants.
     """
     for i, token in enumerate(tokens):
         if token in CONSTANTS:
-            tokens[i] = CONSTANTS[token]
+            tokens[i] = str(CONSTANTS[token])
         elif token == "r":
-            tokens[i] = last_result
+            tokens[i] = str(last_result)
     return tokens
 
 
-def _process_ops(tokens: list, operators: list) -> list:
+def _process_ops(tokens: list[str], operators: list[str]) -> list[str]:
     """Process specific operators left-to-right.
 
-    Example: ["2", "*", "pi"] -> ["2", "*", "3.141592653589793"]
+    Example: list: ["2", "*", "3"], operators: ["*"] -> ["6"]
 
     Args:
         tokens: List of tokens that will shrink after evaluating operators.
