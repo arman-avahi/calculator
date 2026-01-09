@@ -1,0 +1,7 @@
+{
+    "[python]": {
+        "editor.defaultFormatter": "ms-python.python",
+        "editor.formatOnSave": false
+    },
+    "pylint.args": ["--rcfile=pylintrc"]
+}
