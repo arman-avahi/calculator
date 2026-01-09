@@ -34,7 +34,7 @@ def run_calculator():
             result = calc.parse_and_eval(user_input)
             print(result)
         except ValueError:
-            print("Invalid expression! Check operators and numbers.")
+            print("Invalid expression! Check operators, brackets, and numbers.")
         except IndexError:
             print("Incomplete expression! Missing operands.")
         except ZeroDivisionError:

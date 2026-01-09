@@ -48,7 +48,7 @@ class OperationFactory:
         "+": Add,
         "-": Subtract,
         "*": Multiply,
-        "/": Divide
+        "/": Divide,
     }
 
     @staticmethod

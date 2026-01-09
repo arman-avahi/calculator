@@ -24,11 +24,17 @@ def divide(a: float, b: float) -> float:
     return a / b
 
 
+def power(a: float, b: float) -> float:
+    """Return a raised to the power of b."""
+    return a ** b
+
+
 OPERATIONS = {
     "+": add,
     "-": subtract,
     "*": multiply,
     "/": divide,
+    "^": power,
 }
 
 
@@ -36,7 +42,7 @@ def get_operation(operator: str) -> Callable[[float, float], float]:
     """Get operation function for operator symbol.
 
     Args:
-        operator: The operator symbol ('+', '-', '*', '/').
+        operator: The operator symbol ('+', '-', '*', '/', '^').
 
     Returns:
         The corresponding operation function.

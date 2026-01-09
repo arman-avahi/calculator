@@ -18,7 +18,7 @@ class Parser:
         self.last_result: float = 0
 
     def parse_and_eval(self, expression: str) -> float:
-        """Evaluates math expression. Supports +, -, *, and /.
+        """Evaluates math expression. Supports +, -, *, /, and ^.
 
         Args:
             expression: The initial expression string.
@@ -32,14 +32,29 @@ class Parser:
         """
         tokens = _to_tokens(expression)
         tokens = _resolve_constants(tokens, self.last_result)
-        tokens = _process_ops(tokens, ["*", "/"])
-        tokens = _process_ops(tokens, ["+", "-"])
+        tokens = _process_tokens(tokens)
 
         if len(tokens) != 1:
             raise ValueError("Invalid expression")
-
         self.last_result = float(tokens[0])
         return self.last_result
+
+
+def _process_tokens(tokens: list[str]):
+    """Process tokens by handling brackets first, then operations.
+
+    Args:
+        tokens: List of tokens to process.
+
+    Returns:
+        Processed list of tokens.
+    """
+    tokens = _process_brackets(tokens)
+    tokens = _process_ops(tokens, ["^"])
+    tokens = _process_ops(tokens, ["*", "/"])
+    tokens = _process_ops(tokens, ["+", "-"])
+    return tokens
+
 
 
 def _to_tokens(expression: str) -> list[str]:
@@ -58,8 +73,8 @@ def _to_tokens(expression: str) -> list[str]:
         IndexError: If a '-' is found alone at the beginning.
     """
 
-    pattern = r"([\+\-\*/]|pi|tau|e|r)"
-    tokens = re.split(pattern, expression.replace(" ", ""))
+    pattern = r"([\+\-\*/\^\(\)]|pi|tau|e|r)"
+    tokens: list[str] = re.split(pattern, expression.replace(" ", ""))
     filt_tokens = []
     for token in tokens:
         if token:
@@ -131,3 +146,55 @@ def _process_ops(tokens: list[str], operators: list[str]) -> list[str]:
         else:
             i += 1
     return tokens
+
+def _process_brackets(tokens: list[str]) -> list[str]:
+    """Process brackets recursively with implicit multiplication.
+
+    Example: ["4", "(", "2", "+", "3", ")"] -> ["4", "*", "5"]
+             ["(", "2", "+", "3", ")"] -> ["5"]
+
+    Args:
+        tokens: List of tokens that may contain brackets.
+
+    Returns:
+        Modified token list with brackets evaluated.
+
+    Raises:
+        ValueError: If brackets are mismatched.
+    """
+    
+    i = 0
+    open_i = close_i = -1
+    while i < len(tokens):
+        # seek open bracket
+        if tokens[i] == "(":
+            open_i = i
+            break
+        i += 1
+
+    if open_i == -1:
+        return tokens
+
+    i = len(tokens) - 1
+    while i >= 0:
+        # seek close bracket from the end
+        if tokens[i] == ")":
+            close_i = i
+            break
+        i -= 1
+
+    if close_i == -1:
+        raise ValueError("Mismatched brackets")
+
+    sub_tokens: list[str] = tokens[open_i + 1: close_i]
+    sub_tokens = _process_tokens(sub_tokens)
+
+    # Handle implicit multiplication: 4(...) becomes 4 * (...)
+    if open_i > 0 and tokens[open_i - 1] not in operations.OPERATIONS:
+        tokens = tokens[:open_i] + ["*"] + sub_tokens + tokens[close_i + 1:]
+    else:
+        # "(" is at start OR there's already an operator before it
+        tokens = tokens[:open_i] + sub_tokens + tokens[close_i + 1:]
+
+    # Recursively process remaining brackets
+    return _process_brackets(tokens)
