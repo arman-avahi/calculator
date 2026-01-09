@@ -2,15 +2,6 @@
 
 from app import parser
 
-def print_help():
-    """Display help info including any constants and commands."""
-    print("\nCalculator by Arman Bains\n")
-    print("Constants: ")
-    for c in parser.CONSTANTS:
-        print(f"  {c}")
-    print("\nPrevious expression's result will be stored in variable 'r'\n"
-          "Enter q to quit\n"
-          "      h for help\n")
 
 def run_calculator():
     """Run the interactive calculator loop.
@@ -42,3 +33,15 @@ def run_calculator():
         except KeyboardInterrupt:
             print("\nGoodbye!")
             break
+
+
+def print_help():
+    """Display help info including any constants and commands."""
+    print("\nCalculator by Arman Bains\n")
+    print("Constants: ")
+    for c in parser.CONSTANTS:
+        print(f"  {c}")
+    print("\nPrevious expression's result will be stored in variable 'r'\n"
+          "Enter q to quit\n"
+          "      h for help\n")
+

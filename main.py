@@ -1,5 +1,5 @@
 """Entry point for the calculator application."""
-from app.cli import run_calculator
+from app import cli
 
 if __name__ == "__main__":
-    run_calculator()
+    cli.run_calculator()

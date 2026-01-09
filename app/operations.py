@@ -42,7 +42,7 @@ def get_operation(operator: str) -> Callable[[float, float], float]:
     """Get operation function for operator symbol.
 
     Args:
-        operator: The operator symbol ('+', '-', '*', '/', '^').
+        operator: The operator symbol string.
 
     Returns:
         The corresponding operation function.

@@ -18,7 +18,7 @@ class Parser:
         self._last_result: float = 0
 
     def parse_and_eval(self, expression: str) -> float:
-        """Evaluates math expression. Supports +, -, *, /, and ^.
+        """Evaluates math expression.
 
         Args:
             expression: The initial expression string.
@@ -72,7 +72,7 @@ def _to_tokens(expression: str) -> list[str]:
         IndexError: If a '-' is found alone at the beginning.
     """
     pattern = r"([\+\-\*/\^\(\)]|pi|tau|e|r)"
-    tokens: list[str] = re.split(pattern, expression.replace(" ", ""))
+    tokens = re.split(pattern, expression.replace(" ", ""))
     filt_tokens = [token for token in tokens if token]
 
     # handle negative numbers by merging '-' with number on its right
@@ -168,13 +168,13 @@ def _process_brackets(tokens: list[str]) -> list[str]:
         i += 1
 
     if open_i == -1:
-        # No opening bracket found, check for stray closing bracket
+        # no opening bracket found, check for stray closing bracket
         for token in tokens:
             if token == ")":
                 raise ValueError("Mismatched brackets")
         return tokens
 
-    # Find matching closing bracket by going forward from open_i
+    # find matching closing bracket by going forward from open_i
     depth = 1
     i = open_i + 1
     while i < len(tokens):
@@ -193,12 +193,12 @@ def _process_brackets(tokens: list[str]) -> list[str]:
     sub_tokens: list[str] = tokens[open_i + 1: close_i]
     sub_tokens = _process_tokens(sub_tokens)
 
-    # Handle implicit multiplication: 4(...) becomes 4 * (...)
+    # handle implicit multiplication: 4(...) becomes 4 * (...)
     if open_i > 0 and tokens[open_i - 1] not in operations.OPERATIONS:
         tokens = tokens[:open_i] + ["*"] + sub_tokens + tokens[close_i + 1:]
     else:
-        # "(" is at start OR there's already an operator before it
+        # '(' is at start OR there's already an operator before it
         tokens = tokens[:open_i] + sub_tokens + tokens[close_i + 1:]
 
-    # Recursively process remaining brackets
+    # recursively process remaining brackets
     return _process_brackets(tokens)
