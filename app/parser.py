@@ -73,10 +73,7 @@ def _to_tokens(expression: str) -> list[str]:
     """
     pattern = r"([\+\-\*/\^\(\)]|pi|tau|e|r)"
     tokens: list[str] = re.split(pattern, expression.replace(" ", ""))
-    filt_tokens = []
-    for token in tokens:
-        if token:
-            filt_tokens.append(token)
+    filt_tokens = [token for token in tokens if token]
 
     # handle negative numbers by merging '-' with number on its right
     i = 0
