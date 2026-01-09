@@ -40,5 +40,5 @@ def run_calculator():
         except ZeroDivisionError:
             print("Cannot divide by zero!")
         except KeyboardInterrupt:
-            print("Goodbye!")
+            print("\nGoodbye!")
             break

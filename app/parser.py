@@ -15,7 +15,7 @@ class Parser:
     """Handles converting a string of numbers and operations into a float."""
 
     def __init__(self):
-        self.last_result: float = 0
+        self._last_result: float = 0
 
     def parse_and_eval(self, expression: str) -> float:
         """Evaluates math expression. Supports +, -, *, /, and ^.
@@ -31,16 +31,16 @@ class Parser:
             ZeroDivisionError: If division by zero occurs.
         """
         tokens = _to_tokens(expression)
-        tokens = _resolve_constants(tokens, self.last_result)
+        tokens = _resolve_constants(tokens, self._last_result)
         tokens = _process_tokens(tokens)
 
         if len(tokens) != 1:
             raise ValueError("Invalid expression")
-        self.last_result = float(tokens[0])
-        return self.last_result
+        self._last_result = float(tokens[0])
+        return self._last_result
 
 
-def _process_tokens(tokens: list[str]):
+def _process_tokens(tokens: list[str]) -> list[str]:
     """Process tokens by handling brackets first, then operations.
 
     Args:
@@ -54,7 +54,6 @@ def _process_tokens(tokens: list[str]):
     tokens = _process_ops(tokens, ["*", "/"])
     tokens = _process_ops(tokens, ["+", "-"])
     return tokens
-
 
 
 def _to_tokens(expression: str) -> list[str]:
@@ -72,7 +71,6 @@ def _to_tokens(expression: str) -> list[str]:
     Raises:
         IndexError: If a '-' is found alone at the beginning.
     """
-
     pattern = r"([\+\-\*/\^\(\)]|pi|tau|e|r)"
     tokens: list[str] = re.split(pattern, expression.replace(" ", ""))
     filt_tokens = []
@@ -147,6 +145,7 @@ def _process_ops(tokens: list[str], operators: list[str]) -> list[str]:
             i += 1
     return tokens
 
+
 def _process_brackets(tokens: list[str]) -> list[str]:
     """Process brackets recursively with implicit multiplication.
 
@@ -162,7 +161,6 @@ def _process_brackets(tokens: list[str]) -> list[str]:
     Raises:
         ValueError: If brackets are mismatched.
     """
-    
     i = 0
     open_i = close_i = -1
     while i < len(tokens):
@@ -173,17 +171,26 @@ def _process_brackets(tokens: list[str]) -> list[str]:
         i += 1
 
     if open_i == -1:
+        # No opening bracket found, check for stray closing bracket
+        for token in tokens:
+            if token == ")":
+                raise ValueError("Mismatched brackets")
         return tokens
 
-    i = len(tokens) - 1
-    while i >= 0:
-        # seek close bracket from the end
-        if tokens[i] == ")":
-            close_i = i
-            break
-        i -= 1
+    # Find matching closing bracket by going forward from open_i
+    depth = 1
+    i = open_i + 1
+    while i < len(tokens):
+        if tokens[i] == "(":
+            depth += 1
+        elif tokens[i] == ")":
+            depth -= 1
+            if depth == 0:
+                close_i = i
+                break
+        i += 1
 
-    if close_i == -1:
+    if close_i == -1 or close_i < open_i:
         raise ValueError("Mismatched brackets")
 
     sub_tokens: list[str] = tokens[open_i + 1: close_i]

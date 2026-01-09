@@ -1,6 +1,5 @@
-"""Tests for calculator operations."""
 import pytest
-from app.operations import add, subtract, multiply, divide, get_operation
+from app.operations import add, subtract, multiply, divide, power, get_operation
 
 
 class TestAdd:
@@ -80,6 +79,37 @@ class TestDivide:
             divide(5, 0)
 
 
+class TestPower:
+    """Tests for power function."""
+
+    def test_power_positive_numbers(self):
+        assert power(2, 3) == 8
+
+    def test_power_square(self):
+        assert power(5, 2) == 25
+
+    def test_power_cube(self):
+        assert power(3, 3) == 27
+
+    def test_power_to_zero(self):
+        assert power(5, 0) == 1
+
+    def test_power_to_one(self):
+        assert power(7, 1) == 7
+
+    def test_power_negative_exponent(self):
+        assert power(2, -1) == 0.5
+
+    def test_power_fractional_exponent(self):
+        assert power(4, 0.5) == 2.0
+
+    def test_power_negative_base(self):
+        assert power(-2, 3) == -8
+
+    def test_power_floats(self):
+        assert power(2.5, 2) == 6.25
+
+
 class TestGetOperation:
     """Tests for get_operation function."""
 
@@ -99,9 +129,13 @@ class TestGetOperation:
         op = get_operation("/")
         assert op(10, 2) == 5
 
+    def test_get_power_operation(self):
+        op = get_operation("^")
+        assert op(2, 3) == 8
+
     def test_unknown_operator_raises_error(self):
         with pytest.raises(ValueError, match="Unknown operator"):
-            get_operation("^")
+            get_operation("%")
 
     def test_invalid_operator_raises_error(self):
         with pytest.raises(ValueError):
